@@ -101,8 +101,13 @@ export async function onConfigView(view) {
         core: view.querySelector(".plugins .wrap.core ul")
     };
 
+    let first_section_plugins = true;
     section_plugins.addEventListener("click", event => {
-        const target = event.target.closest(".title");
+      if(first_section_plugins){
+        first_section_plugins = false;
+        initPluginsList();
+      }
+      const target = event.target.closest(".title");
         if (target) {
             const icon = target.querySelector("svg");
             const list = target.nextElementSibling;
@@ -111,49 +116,51 @@ export async function onConfigView(view) {
         }
     });
 
-    const disabled_list = await config_view.getDisabledList();
+    async function initPluginsList(){
+      const disabled_list = await config_view.getDisabledList() || [];
 
-    for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
-        const hr = document.createElement("hr");
-        hr.classList.add("horizontal-dividing-line");
-
-        const plugin_item_html = `
-        <li class="vertical-list-item">
-            <div>
-                <h2>${plugin.manifest.name}</h2>
-                <span class="secondary-text">${plugin.manifest.description}</span>
-            </div>
-            <div class="q-switch is-active">
-                <span class="q-switch__handle"></span>
-            </div>
-        </li>
-        `;
-        const doc = parser.parseFromString(plugin_item_html, "text/html");
-
-        const plugin_item = doc.querySelector(".vertical-list-item");
-        const q_switch = plugin_item.querySelector(".q-switch");
-
-        q_switch.addEventListener("click", async () => {
-            const disabled_list = await config_view.getDisabledList();
-            let new_disabled_list = [];
-            if (q_switch.classList.contains("is-active")) {
-                new_disabled_list = [...disabled_list, slug];
-            }
-            else {
-                new_disabled_list = disabled_list.filter(value => value != slug);
-            }
-            await config_view.setDisabledList(new_disabled_list);
-            q_switch.classList.toggle("is-active");
-        });
-
-        if (disabled_list.includes(slug)) {
-            q_switch.classList.remove("is-active");
-        }
-
-        const plugin_type = plugin.manifest.type;
-        const plugin_list = plugin_lists[plugin_type] || plugin_lists.extension;
-
-        plugin_list.appendChild(hr);
-        plugin_list.appendChild(plugin_item);
+      for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
+          const hr = document.createElement("hr");
+          hr.classList.add("horizontal-dividing-line");
+  
+          const plugin_item_html = `
+          <li class="vertical-list-item">
+              <div>
+                  <h2>${plugin.manifest.name}</h2>
+                  <span class="secondary-text">${plugin.manifest.description}</span>
+              </div>
+              <div class="q-switch is-active">
+                  <span class="q-switch__handle"></span>
+              </div>
+          </li>
+          `;
+          const doc = parser.parseFromString(plugin_item_html, "text/html");
+  
+          const plugin_item = doc.querySelector(".vertical-list-item");
+          const q_switch = plugin_item.querySelector(".q-switch");
+  
+          q_switch.addEventListener("click", async () => {
+              const disabled_list = await config_view.getDisabledList() || [];
+              let new_disabled_list = [];
+              if (q_switch.classList.contains("is-active")) {
+                  new_disabled_list = [...disabled_list, slug];
+              }
+              else {
+                  new_disabled_list = disabled_list.filter(value => value != slug);
+              }
+              await config_view.setDisabledList(new_disabled_list);
+              q_switch.classList.toggle("is-active");
+          });
+  
+          if (disabled_list.includes(slug)) {
+              q_switch.classList.remove("is-active");
+          }
+  
+          const plugin_type = plugin.manifest.type;
+          const plugin_list = plugin_lists[plugin_type] || plugin_lists.extension;
+  
+          plugin_list.appendChild(hr);
+          plugin_list.appendChild(plugin_item);
+      }
     }
 }
