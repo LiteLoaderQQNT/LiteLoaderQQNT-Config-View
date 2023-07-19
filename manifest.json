@@ -4,10 +4,10 @@
     "name": "LiteLoader 配置界面",
     "slug": "config_view",
     "description": "LiteLoaderQQNT的配置界面",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "thumbnail": "",
     "author": {
-        "name": "沫烬染",
+        "name": "沫烬染&yige-yigeren",
         "link": "https://github.com/mo-jinran"
     },
     "repository": {

@@ -21,6 +21,16 @@ contextBridge.exposeInMainWorld("config_view", {
         "LiteLoader.config_view.setProfilePath",
         path
     ),
+    // 打开目录
+    openDirectory: path => ipcRenderer.invoke(
+        "LiteLoader.config_view.openDirectory",
+        path
+    ),
+    // 打开网址
+    openURL: url => ipcRenderer.invoke(
+        "LiteLoader.config_view.openURL",
+        url
+    ),
     // 退出软件
     quit: () => ipcRenderer.send(
         "LiteLoader.config_view.quit"

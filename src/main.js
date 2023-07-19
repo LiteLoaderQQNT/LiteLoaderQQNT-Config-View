@@ -66,6 +66,16 @@ function setProfilePath(path) {
     })
 }
 
+function openDirectory(path) {
+    const command = `explorer "${path}"`;
+    child_process.exec(command);
+}
+
+function openURL(url) {
+    const command = `start "" "${url}"`;
+    child_process.exec(command);
+}
+
 
 function quit() {
     app.quit();
@@ -92,6 +102,16 @@ function onLoad(plugin, liteloader) {
     ipcMain.handle(
         "LiteLoader.config_view.setProfilePath",
         (event, ...message) => setProfilePath(...message)
+    );
+    // 打开目录
+    ipcMain.handle(
+        "LiteLoader.config_view.openDirectory",
+        (event, ...message) => openDirectory(...message)
+    );
+    // 打开网址
+    ipcMain.handle(
+        "LiteLoader.config_view.openURL",
+        (event, ...message) => openURL(...message)
     );
     // 退出软件
     ipcMain.on(

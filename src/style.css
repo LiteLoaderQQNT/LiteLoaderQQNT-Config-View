@@ -12,6 +12,19 @@
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.guise {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    cursor: pointer;
+}
+.guise:focus {
+    outline: none;
+}
+
 .config_view .modal-dialog {
     width: 480px;
     border-radius: 8px;

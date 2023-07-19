@@ -35,6 +35,27 @@ export async function onConfigView(view) {
     electron.textContent = LiteLoader.versions.electron;
     nodejs.textContent = LiteLoader.versions.node;
 
+    const open_liteloaderabout = view.querySelector(".versions .liteloader .about");
+    const open_liteloaderverson = view.querySelector(".versions .liteloader .verson");
+    const open_qqntabout = view.querySelector(".versions .qqnt .about");
+    const open_qqntverson = view.querySelector(".versions .qqnt .verson");
+
+    open_liteloaderabout.addEventListener("click", async event => {
+        await config_view.openURL("https://github.com/mo-jinran/LiteLoaderQQNT");
+    });
+
+    open_liteloaderverson.addEventListener("click", async event => {
+        await config_view.openURL(`https://github.com/mo-jinran/LiteLoaderQQNT/releases/tag/${LiteLoader.versions.liteLoader}`);
+    });
+
+    open_qqntabout.addEventListener("click", async event => {
+        await config_view.openURL("https://im.qq.com/index/");
+    });
+
+    open_qqntverson.addEventListener("click", async event => {
+        await config_view.openURL("https://im.qq.com/index/");
+        // 找不到QQNT版的更新日志
+    });
 
     // 模态窗口
     const modal_window = view.querySelector(".path .modal-window");
@@ -56,6 +77,7 @@ export async function onConfigView(view) {
     const path_input = view.querySelector(".path .path-input");
     const reset = view.querySelector(".path .ops-btns .reset");
     const apply = view.querySelector(".path .ops-btns .apply");
+    const open_dir = view.querySelector(".path .ops-btns .open-dir");
 
     path_input.value = LiteLoader.path.profile;
 
@@ -86,12 +108,17 @@ export async function onConfigView(view) {
         modal_window.classList.remove("hidden");
     });
 
+    open_dir.addEventListener("click", async event => {
+        await config_view.openDirectory(path_input.value);
+    });
+
     // 非Windows平台禁止修改
     if (LiteLoader.os.platform != "win32") {
         path_input.readOnly = true;
         pick_dir.classList.add("disabled");
         reset.classList.add("disabled");
         apply.classList.add("disabled");
+        open_dir.classList.add("disabled");
         pick_dir.previousElementSibling.textContent += "（非Windows平台请手动更改环境变量）"
     }
 
