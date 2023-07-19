@@ -3,20 +3,25 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 
 contextBridge.exposeInMainWorld("config_view", {
-    getDisabledList: () => ipcRenderer.invoke(
-        "LiteLoader.config_view.getDisabledList"
+    // 获取配置
+    getConfig: () => ipcRenderer.invoke(
+        "LiteLoader.config_view.getConfig"
     ),
-    setDisabledList: list => ipcRenderer.invoke(
-        "LiteLoader.config_view.setDisabledList",
-        list
+    // 设置配置
+    setConfig: config => ipcRenderer.invoke(
+        "LiteLoader.config_view.setConfig",
+        config
     ),
+    // 显示目录选择框
     showPickDirDialog: () => ipcRenderer.invoke(
         "LiteLoader.config_view.showPickDirDialog"
     ),
+    // 设置数据目录
     setProfilePath: path => ipcRenderer.invoke(
         "LiteLoader.config_view.setProfilePath",
         path
     ),
+    // 退出软件
     quit: () => ipcRenderer.send(
         "LiteLoader.config_view.quit"
     )

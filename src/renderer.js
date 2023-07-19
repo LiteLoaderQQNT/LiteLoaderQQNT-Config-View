@@ -1,3 +1,7 @@
+// 获取配置文件
+const config = await config_view.getConfig();
+
+
 export async function onConfigView(view) {
     const plugin_path = LiteLoader.plugins.config_view.path.plugin;
     const css_file_path = `file://${plugin_path}/src/style.css`;
@@ -111,8 +115,6 @@ export async function onConfigView(view) {
         }
     });
 
-    const disabled_list = await config_view.getDisabledList();
-
     for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
         const hr = document.createElement("hr");
         hr.classList.add("horizontal-dividing-line");
@@ -134,19 +136,17 @@ export async function onConfigView(view) {
         const q_switch = plugin_item.querySelector(".q-switch");
 
         q_switch.addEventListener("click", async () => {
-            const disabled_list = await config_view.getDisabledList();
-            let new_disabled_list = [];
             if (q_switch.classList.contains("is-active")) {
-                new_disabled_list = [...disabled_list, slug];
+                config.disabled = [...config.disabled, slug];
             }
             else {
-                new_disabled_list = disabled_list.filter(value => value != slug);
+                config.disabled = config.disabled.filter(value => value != slug);
             }
-            await config_view.setDisabledList(new_disabled_list);
+            await config_view.setConfig(config);
             q_switch.classList.toggle("is-active");
         });
 
-        if (disabled_list.includes(slug)) {
+        if (config.disabled.includes(slug)) {
             q_switch.classList.remove("is-active");
         }
 

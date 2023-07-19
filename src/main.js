@@ -3,84 +3,101 @@ const { app, ipcMain, dialog } = require("electron");
 const child_process = require("child_process");
 const fs = require("fs");
 
+// 默认配置
+const default_config = {
+    "disabled": []
+};
+
+
+function getConfig(liteloader) {
+    const config_path = liteloader.path.config;
+    try {
+        const data = fs.readFileSync(config_path, "utf-8");
+        const config = JSON.parse(data);
+        return {
+            ...default_config,
+            ...{ "disabled": config?.disabled ?? [] }
+        }
+    }
+    catch (error) {
+        return default_config;
+    }
+}
+
+
+function setConfig(liteloader, new_config) {
+    const config_path = liteloader.path.config;
+    try {
+        const data = fs.readFileSync(config_path, "utf-8");
+        const config = JSON.parse(data);
+
+        config.disabled = new_config.disabled;
+
+        const config_string = JSON.stringify(config, null, 4);
+        fs.writeFileSync(config_path, config_string, "utf-8");
+    }
+    catch (error) {
+        return error;
+    }
+}
+
+
+function showPickDirDialog() {
+    dialog.showOpenDialog({
+        properties: [
+            "openDirectory",
+            "showHiddenFiles",
+            "createDirectory"
+        ]
+    })
+}
+
+
+function setProfilePath(path) {
+    return new Promise((resolve, reject) => {
+        const command = `setx LITELOADERQQNT_PROFILE "${path}"`;
+        child_process.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(stdout, stderr);
+        });
+    })
+}
+
+
+function quit() {
+    app.quit();
+}
+
 
 function onLoad(plugin, liteloader) {
-
+    // 获取配置
     ipcMain.handle(
-        "LiteLoader.config_view.getDisabledList",
-        (event, message) => {
-            const config_path = liteloader.path.config;
-            try {
-                const data = fs.readFileSync(config_path, "utf-8");
-                const config = JSON.parse(data);
-                const disabled_list = config?.disabled;
-                return disabled_list;
-            }
-            catch (error) {
-                return []
-            }
-        }
+        "LiteLoader.config_view.getConfig",
+        (event, ...message) => getConfig(liteloader, ...message)
     );
-
-
+    // 设置配置
     ipcMain.handle(
-        "LiteLoader.config_view.setDisabledList",
-        (event, list) => {
-            const config_path = liteloader.path.config;
-            try {
-                const data = fs.readFileSync(config_path, "utf-8");
-                const config = JSON.parse(data);
-
-                config["disabled"] = list;
-
-                const new_config = JSON.stringify(config, null, 4);
-                fs.writeFileSync(config_path, new_config, "utf-8");
-            }
-            catch (error) {
-                const config = {
-                    disabled: list
-                }
-                const new_config = JSON.stringify(config, null, 4);
-                fs.writeFileSync(config_path, new_config, "utf-8");
-            }
-        }
+        "LiteLoader.config_view.setConfig",
+        (event, ...message) => setConfig(liteloader, ...message)
     );
-
-
+    // 显示目录选择框
     ipcMain.handle(
         "LiteLoader.config_view.showPickDirDialog",
-        (event, message) => dialog.showOpenDialog({
-            properties: [
-                "openDirectory",
-                "showHiddenFiles",
-                "createDirectory"
-            ]
-        })
+        (event, ...message) => showPickDirDialog()
     );
-
-
+    // 设置数据目录
     ipcMain.handle(
         "LiteLoader.config_view.setProfilePath",
-        (event, path) => new Promise((resolve, reject) => {
-            const command = `setx LITELOADERQQNT_PROFILE "${path}"`;
-            child_process.exec(command, (error, stdout, stderr) => {
-                if (error) {
-                    reject(error);
-                    return;
-                }
-                resolve(stdout, stderr);
-            });
-        })
+        (event, ...message) => setProfilePath(...message)
     );
-
-
+    // 退出软件
     ipcMain.on(
         "LiteLoader.config_view.quit",
-        (event, message) => {
-            app.quit();
-        }
+        (event, ...message) => quit()
     );
-
 }
 
 
