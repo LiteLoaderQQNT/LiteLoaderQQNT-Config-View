@@ -1,5 +1,5 @@
 // 运行在 Electron 主进程 下的插件入口
-const { app, ipcMain, dialog } = require("electron");
+const { app, ipcMain, dialog, shell } = require("electron");
 const child_process = require("child_process");
 const fs = require("fs");
 
@@ -53,6 +53,12 @@ function showPickDirDialog() {
 }
 
 
+function showProfileDir(liteloader) {
+    const profile_path = liteloader.path.profile;
+    return shell.openPath(profile_path);
+}
+
+
 function setProfilePath(path) {
     return new Promise((resolve, reject) => {
         const command = `setx LITELOADERQQNT_PROFILE "${path}"`;
@@ -88,13 +94,18 @@ function onLoad(plugin, liteloader) {
         "LiteLoader.config_view.showPickDirDialog",
         (event, ...message) => showPickDirDialog()
     );
+    // 显示数据目录
+    ipcMain.handle(
+        "LiteLoader.config_view.showProfileDir",
+        (event, ...message) => showProfileDir(liteloader)
+    );
     // 设置数据目录
     ipcMain.handle(
         "LiteLoader.config_view.setProfilePath",
         (event, ...message) => setProfilePath(...message)
     );
     // 退出软件
-    ipcMain.on(
+    ipcMain.handle(
         "LiteLoader.config_view.quit",
         (event, ...message) => quit()
     );

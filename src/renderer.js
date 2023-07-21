@@ -52,14 +52,15 @@ export async function onConfigView(view) {
 
 
     // 数据目录
-    const pick_dir = view.querySelector(".path .pick-dir");
     const path_input = view.querySelector(".path .path-input");
-    const reset = view.querySelector(".path .ops-btns .reset");
-    const apply = view.querySelector(".path .ops-btns .apply");
+    const pick_dir = view.querySelector(".path .pick-dir");
+    const open_dir = view.querySelector(".path .open-dir");
+    const reset = view.querySelector(".path .reset");
+    const apply = view.querySelector(".path .apply");
 
     path_input.value = LiteLoader.path.profile;
 
-    pick_dir.addEventListener("click", async event => {
+    pick_dir.addEventListener("click", async () => {
         const result = await config_view.showPickDirDialog();
         const path = result.filePaths?.[0];
         if (path) {
@@ -67,7 +68,11 @@ export async function onConfigView(view) {
         }
     });
 
-    reset.addEventListener("click", async event => {
+    open_dir.addEventListener("click", () => {
+        config_view.showProfileDir();
+    });
+
+    reset.addEventListener("click", async () => {
         config_view.setProfilePath("").then(() => {
             path_input.value = LiteLoader.path.default_profile;
             first.classList.add("hidden");
@@ -77,7 +82,7 @@ export async function onConfigView(view) {
         modal_window.classList.remove("hidden");
     });
 
-    apply.addEventListener("click", event => {
+    apply.addEventListener("click", () => {
         config_view.setProfilePath(path_input.value).then(() => {
             first.classList.add("hidden");
             second.classList.remove("hidden");

@@ -16,13 +16,17 @@ contextBridge.exposeInMainWorld("config_view", {
     showPickDirDialog: () => ipcRenderer.invoke(
         "LiteLoader.config_view.showPickDirDialog"
     ),
+    // 显示数据目录
+    showProfileDir: () => ipcRenderer.invoke(
+        "LiteLoader.config_view.showProfileDir"
+    ),
     // 设置数据目录
     setProfilePath: path => ipcRenderer.invoke(
         "LiteLoader.config_view.setProfilePath",
         path
     ),
     // 退出软件
-    quit: () => ipcRenderer.send(
+    quit: () => ipcRenderer.invoke(
         "LiteLoader.config_view.quit"
     )
 });
