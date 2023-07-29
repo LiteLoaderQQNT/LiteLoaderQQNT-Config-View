@@ -4,8 +4,8 @@ const config = await config_view.getConfig();
 
 export async function onConfigView(view) {
     const plugin_path = LiteLoader.plugins.config_view.path.plugin;
-    const css_file_path = `file://${plugin_path}/src/style.css`;
-    const html_file_path = `file://${plugin_path}/src/view.html`;
+    const css_file_path = `llqqnt://local-file/${plugin_path}/src/style.css`;
+    const html_file_path = `llqqnt://local-file/${plugin_path}/src/view.html`;
 
     // CSS
     const link_element = document.createElement("link");
