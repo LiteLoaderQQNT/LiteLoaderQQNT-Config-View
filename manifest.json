@@ -12,9 +12,9 @@
     },
     "repository": {
         "repo": "mo-jinran/LiteLoaderQQNT-Config-View",
-        "branch": "main",
+        "branch": "v3",
         "use_release": {
-            "tag": "latest",
+            "tag": "0.1.2",
             "name": "LiteLoaderQQNT-Config-View.zip"
         }
     },
