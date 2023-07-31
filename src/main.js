@@ -9,8 +9,8 @@ const default_config = {
 };
 
 
-function getConfig(liteloader) {
-    const config_path = liteloader.path.config;
+function getConfig() {
+    const config_path = LiteLoader.path.config;
     try {
         const data = fs.readFileSync(config_path, "utf-8");
         const config = JSON.parse(data);
@@ -25,8 +25,8 @@ function getConfig(liteloader) {
 }
 
 
-function setConfig(liteloader, new_config) {
-    const config_path = liteloader.path.config;
+function setConfig(new_config) {
+    const config_path = LiteLoader.path.config;
     try {
         const data = fs.readFileSync(config_path, "utf-8");
         const config = JSON.parse(data);
@@ -53,8 +53,8 @@ function showPickDirDialog() {
 }
 
 
-function showProfileDir(liteloader) {
-    const profile_path = liteloader.path.profile;
+function showProfileDir() {
+    const profile_path = LiteLoader.path.profile;
     return shell.openPath(profile_path);
 }
 
@@ -78,16 +78,16 @@ function quit() {
 }
 
 
-function onLoad(plugin, liteloader) {
+function onLoad(plugin) {
     // 获取配置
     ipcMain.handle(
         "LiteLoader.config_view.getConfig",
-        (event, ...message) => getConfig(liteloader, ...message)
+        (event, ...message) => getConfig(...message)
     );
     // 设置配置
     ipcMain.handle(
         "LiteLoader.config_view.setConfig",
-        (event, ...message) => setConfig(liteloader, ...message)
+        (event, ...message) => setConfig(...message)
     );
     // 显示目录选择框
     ipcMain.handle(
@@ -97,7 +97,7 @@ function onLoad(plugin, liteloader) {
     // 显示数据目录
     ipcMain.handle(
         "LiteLoader.config_view.showProfileDir",
-        (event, ...message) => showProfileDir(liteloader)
+        (event, ...message) => showProfileDir()
     );
     // 设置数据目录
     ipcMain.handle(
