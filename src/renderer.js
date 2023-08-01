@@ -52,6 +52,7 @@ export async function onConfigView(view) {
 
 
     // 数据目录
+    const title = view.querySelector(".path h2");
     const path_input = view.querySelector(".path .path-input");
     const pick_dir = view.querySelector(".path .pick-dir");
     const open_dir = view.querySelector(".path .open-dir");
@@ -97,7 +98,7 @@ export async function onConfigView(view) {
         pick_dir.classList.add("disabled");
         reset.classList.add("disabled");
         apply.classList.add("disabled");
-        pick_dir.previousElementSibling.textContent += "（非Windows平台请手动更改环境变量）"
+        title.textContent += "（非Windows平台请手动更改环境变量）"
     }
 
 
