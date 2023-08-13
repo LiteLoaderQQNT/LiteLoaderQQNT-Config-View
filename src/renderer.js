@@ -209,7 +209,7 @@ function initPluginList(view) {
 
         const thumbnail = plugin.manifest?.thumbnail;
         const plugin_icon = `llqqnt://local-file/${plugin.path.plugin}/${thumbnail}`;
-        const default_icon = `llqqnt://local-file/${plugin_path.plugin}/src/default_icon.png`;
+        const default_icon = `llqqnt://local-file/${plugin_path.plugin}/src/static/default_icon.png`;
         const manifest = {
             ...plugin.manifest,
             thumbnail: thumbnail ? plugin_icon : default_icon,
@@ -238,8 +238,8 @@ function initAbout(view) {
 
 
 export async function onConfigView(view) {
-    const css_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/style.css`;
-    const html_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/view.html`;
+    const css_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/static/style.css`;
+    const html_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/static/view.html`;
 
     // CSS
     const link_element = document.createElement("link");
