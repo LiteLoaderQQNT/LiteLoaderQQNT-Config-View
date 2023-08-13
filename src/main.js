@@ -42,6 +42,11 @@ function setConfig(new_config) {
 }
 
 
+function openWeb(url) {
+    shell.openExternal(url);
+}
+
+
 function showPickDirDialog() {
     dialog.showOpenDialog({
         properties: [
@@ -88,6 +93,11 @@ function onLoad(plugin) {
     ipcMain.handle(
         "LiteLoader.config_view.setConfig",
         (event, ...message) => setConfig(...message)
+    );
+    // 外部打开网址
+    ipcMain.on(
+        "LiteLoader.config_view.openWeb",
+        (event, ...message) => openWeb(...message)
     );
     // 显示目录选择框
     ipcMain.handle(

@@ -12,6 +12,11 @@ contextBridge.exposeInMainWorld("config_view", {
         "LiteLoader.config_view.setConfig",
         config
     ),
+    // 外部打开网址
+    openWeb: url => ipcRenderer.send(
+        "LiteLoader.config_view.openWeb",
+        url
+    ),
     // 显示目录选择框
     showPickDirDialog: () => ipcRenderer.invoke(
         "LiteLoader.config_view.showPickDirDialog"

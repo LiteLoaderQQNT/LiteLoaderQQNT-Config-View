@@ -49,13 +49,13 @@
 
 
 /* 版本号 */
-.config_view .versions .wrap {
+.config_view .versions .wrap.current {
     display: flex;
     justify-content: space-between;
     padding: 16px 0px;
 }
 
-.config_view .versions .wrap>div {
+.config_view .versions .wrap.current>div {
     flex: 1;
     margin: 0px 10px;
     border-radius: 8px;
