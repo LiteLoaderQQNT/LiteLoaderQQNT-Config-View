@@ -4,8 +4,8 @@
     "name": "LiteLoader 配置界面",
     "slug": "config_view",
     "description": "LiteLoaderQQNT的配置界面",
-    "version": "0.1.4",
-    "thumbnail": "",
+    "version": "0.2.0",
+    "thumbnail": null,
     "author": {
         "name": "沫烬染",
         "link": "https://github.com/mo-jinran"
@@ -14,7 +14,7 @@
         "repo": "mo-jinran/LiteLoaderQQNT-Config-View",
         "branch": "v3",
         "use_release": {
-            "tag": "0.1.4",
+            "tag": "0.2.0",
             "name": "LiteLoaderQQNT-Config-View.zip"
         }
     },
