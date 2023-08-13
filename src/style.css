@@ -88,3 +88,47 @@
         color: white;
     }
 }
+
+
+/* 插件缩略图 */
+.config_view .plugins .thumbnail {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+}
+
+/* 插件信息容器 */
+.config_view .plugins .info {
+    flex: 1;
+    align-self: start;
+    margin: 0px 16px;
+}
+
+/* 插件名字 */
+.config_view .plugins .info h2,
+.config_view .plugins .info p {
+    display: -webkit-box;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+/* 插件附加信息 */
+.config_view .plugins .extra-information span {
+    margin-right: 12px;
+}
+
+/* 插件附加信息 */
+.config_view .plugins .extra-information a {
+    color: var(--text-link);
+}
+
+.config_view .plugins .extra-information a:hover {
+    color: var(--hover-link);
+}
+
+.config_view .plugins .extra-information a:active {
+    color: var(--press-link);
+}

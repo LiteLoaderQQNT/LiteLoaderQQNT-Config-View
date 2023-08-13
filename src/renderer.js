@@ -21,6 +21,9 @@ export function compareVersion(local_version, remote_version) {
 }
 
 
+// 插件本体的路径
+const plugin_path = LiteLoader.plugins.config_view.path;
+
 // 获取配置文件
 const config = await config_view.getConfig();
 
@@ -115,7 +118,7 @@ function initDataDir(view) {
         config_view.showProfileDir();
     });
 
-    reset.addEventListener("click", async () => {
+    reset.addEventListener("click", () => {
         config_view.setProfilePath("").then(() => {
             path_input.value = LiteLoader.path.default_profile;
             first.classList.add("hidden");
@@ -146,7 +149,6 @@ function initDataDir(view) {
 
 
 function initPluginList(view) {
-    const parser = new DOMParser();
     const section_plugins = view.querySelector(".plugins");
     const plugin_lists = {
         extension: view.querySelector(".plugins .wrap.extension ul"),
@@ -165,46 +167,61 @@ function initPluginList(view) {
         }
     });
 
-    for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
-        const hr = document.createElement("hr");
-        hr.classList.add("horizontal-dividing-line");
-
+    const createPluginItem = (manifest, switch_handle) => {
         const plugin_item_html = `
+        <hr class="horizontal-dividing-line" />
         <li class="vertical-list-item">
-            <div>
-                <h2>${plugin.manifest.name}</h2>
-                <span class="secondary-text">${plugin.manifest.description}</span>
+            <img src="${manifest.thumbnail}" class="thumbnail">
+            <div class="info">
+                <h2 title="${manifest.name}">${manifest.name}</h2>
+                <p class="secondary-text" title="${manifest.description}">${manifest.description}</p>
+                <p class="secondary-text extra-information">
+                    <span>版本：${manifest.version}</span>
+                    <span>开发：
+                        <a onclick="plugins_marketplace.openWeb('${manifest.author.link}')" >${manifest.author.name}</a>
+                    </span>
+                </p>
             </div>
             <div class="q-switch is-active">
                 <span class="q-switch__handle"></span>
             </div>
         </li>
         `;
-        const doc = parser.parseFromString(plugin_item_html, "text/html");
+        const doc = new DOMParser().parseFromString(plugin_item_html, "text/html");
 
-        const plugin_item = doc.querySelector(".vertical-list-item");
-        const q_switch = plugin_item.querySelector(".q-switch");
+        // 初始化按钮功能
+        const switch_btn = doc.querySelector(".q-switch");
+        switch_btn.addEventListener("click", switch_handle);
+        switch_btn.classList.toggle("is-active", !config.disabled.includes(manifest.slug));
 
-        q_switch.addEventListener("click", async () => {
-            if (q_switch.classList.contains("is-active")) {
-                config.disabled = [...config.disabled, slug];
-            }
-            else {
-                config.disabled = config.disabled.filter(value => value != slug);
-            }
-            await config_view.setConfig(config);
-            q_switch.classList.toggle("is-active");
-        });
+        return doc.body;
+    }
 
-        if (config.disabled.includes(slug)) {
-            q_switch.classList.remove("is-active");
+    for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
+        const switch_handler = event => {
+            const is_active = event.currentTarget.classList.contains("is-active");
+            const enabled = [...config.disabled, slug];
+            const disabled = config.disabled.filter(value => value != slug);
+            config.disabled = is_active ? enabled : disabled;
+            config_view.setConfig(config);
+            event.currentTarget.classList.toggle("is-active");
         }
 
-        const plugin_type = plugin.manifest.type;
-        const plugin_list = plugin_lists[plugin_type] || plugin_lists.extension;
+        const thumbnail = plugin.manifest?.thumbnail;
+        const plugin_icon = `llqqnt://local-file/${plugin.path.plugin}/${thumbnail}`;
+        const default_icon = `llqqnt://local-file/${plugin_path.plugin}/src/default_icon.png`;
+        const manifest = {
+            ...plugin.manifest,
+            thumbnail: thumbnail ? plugin_icon : default_icon,
+            author: {
+                name: plugin.manifest.author?.name ?? plugin.manifest.author[0].name,
+                link: plugin.manifest.author?.link ?? plugin.manifest.author[0].link
+            }
+        }
 
-        plugin_list.appendChild(hr);
-        plugin_list.appendChild(plugin_item);
+        const plugin_item = createPluginItem(manifest, switch_handler);
+        const plugin_list = plugin_lists[plugin.manifest.type] || plugin_lists.extension;
+        plugin_item.childNodes.forEach(node => plugin_list.appendChild(node));
     }
 }
 
@@ -221,9 +238,8 @@ function initAbout(view) {
 
 
 export async function onConfigView(view) {
-    const plugin_path = LiteLoader.plugins.config_view.path.plugin;
-    const css_file_path = `llqqnt://local-file/${plugin_path}/src/style.css`;
-    const html_file_path = `llqqnt://local-file/${plugin_path}/src/view.html`;
+    const css_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/style.css`;
+    const html_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/view.html`;
 
     // CSS
     const link_element = document.createElement("link");
