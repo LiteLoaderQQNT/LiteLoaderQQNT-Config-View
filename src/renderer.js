@@ -209,6 +209,17 @@ function initPluginList(view) {
 }
 
 
+function initAbout(view) {
+    const homepage_btn = view.querySelector(".about button.liteloaderqqnt");
+    const github_btn = view.querySelector(".about button.github");
+    const telegram_btn = view.querySelector(".about button.telegram");
+
+    homepage_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
+    github_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
+    telegram_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
+}
+
+
 export async function onConfigView(view) {
     const plugin_path = LiteLoader.plugins.config_view.path.plugin;
     const css_file_path = `llqqnt://local-file/${plugin_path}/src/style.css`;
@@ -227,7 +238,8 @@ export async function onConfigView(view) {
     doc.querySelectorAll("section").forEach(node => view.appendChild(node));
 
     // 初始化
-    initVersions(view)
-    initDataDir(view)
-    initPluginList(view)
+    initVersions(view);
+    initDataDir(view);
+    initPluginList(view);
+    initAbout(view);
 }
