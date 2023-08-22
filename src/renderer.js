@@ -234,6 +234,15 @@ function initAbout(view) {
     homepage_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
     github_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
     telegram_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
+
+    // Hitokoto - 一言
+    const fetchHitokoto = async () => {
+        const { hitokoto, creator } = await (await fetch("https://v1.hitokoto.cn")).json();
+        view.querySelector(".about .hitokoto_text").textContent = hitokoto;
+        view.querySelector(".about .hitokoto_author").textContent = creator;
+    }
+    fetchHitokoto();
+    setInterval(fetchHitokoto, 1000 * 10);
 }
 
 
