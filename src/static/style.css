@@ -64,7 +64,7 @@
 
 
 /* 数据目录 */
-.config_view .path .path-input {
+.config_view .input_box {
     align-self: normal;
     flex: 1;
     border-radius: 4px;
@@ -72,18 +72,24 @@
     transition: all 100ms ease-out;
 }
 
-.config_view .path .path-input:focus {
+.config_view .input_box:focus {
     padding-left: 5px;
     background-color: var(--overlay_active);
 }
 
 @media (prefers-color-scheme: light) {
+    .input_box {
+        background-color: rgb(219, 219, 219);
+    }
     .text_color {
         color: black;
     }
 }
 
 @media (prefers-color-scheme: dark) {
+    .input_box {
+        background-color: rgb(53, 53, 53);
+    }
     .text_color {
         color: white;
     }

@@ -4,7 +4,10 @@ export function compareVersion(local_version, remote_version) {
     const local_version_arr = local_version.trim().split(".");
     const remote_version_arr = remote_version.trim().split(".");
     // 返回数组长度最大的
-    const max_length = Math.max(local_version_arr.length, remote_version_arr.length);
+    const max_length = Math.max(
+        local_version_arr.length,
+        remote_version_arr.length
+    );
     // 从头对比每一个
     for (let i = 0; i < max_length; i++) {
         // 将字符串改为数字
@@ -20,17 +23,17 @@ export function compareVersion(local_version, remote_version) {
     return false;
 }
 
-
 // 插件本体的路径
 const plugin_path = LiteLoader.plugins.config_view.path;
 
 // 获取配置文件
 const config = await config_view.getConfig();
 
-
 function initVersions(view) {
     const qqnt = view.querySelector(".versions .wrap.current .qqnt p");
-    const liteloader = view.querySelector(".versions .wrap.current .liteloader p");
+    const liteloader = view.querySelector(
+        ".versions .wrap.current .liteloader p"
+    );
     const chromium = view.querySelector(".versions .wrap.current .chromium p");
     const electron = view.querySelector(".versions .wrap.current .electron p");
     const nodejs = view.querySelector(".versions .wrap.current .nodejs p");
@@ -46,7 +49,7 @@ function initVersions(view) {
 
     const jump_link = () => {
         config_view.openWeb(update_btn.value);
-    }
+    };
 
     const try_again = () => {
         // 初始化 显示
@@ -56,32 +59,70 @@ function initVersions(view) {
         update_btn.removeEventListener("click", jump_link);
         update_btn.removeEventListener("click", try_again);
         // 检测是否有新版
-        const repo_url = LiteLoader.package.liteLoader.repository.url
-        const release_latest_url = `${repo_url.slice(0, repo_url.lastIndexOf(".git"))}/releases/latest`;
-        fetch(release_latest_url).then(res => {
-            const new_version = (res.url).slice((res.url).lastIndexOf("/") + 1);
-            // 有新版
-            if (compareVersion(LiteLoader.versions.liteLoader, new_version)) {
-                title.textContent = `发现 LiteLoaderQQNT 新版本 ${new_version}`;
-                update_btn.textContent = "去瞅一眼";
-                update_btn.value = res.url;
-                update_btn.removeEventListener("click", try_again);
-                update_btn.addEventListener("click", jump_link);
-            }
-            // 没新版
-            else {
-                title.textContent = "暂未发现 LiteLoaderQQNT 有新版本，目前已是最新";
+        const repo_url = LiteLoader.package.liteLoader.repository.url;
+        const release_latest_url = `${repo_url.slice(
+            0,
+            repo_url.lastIndexOf(".git")
+        )}/releases/latest`;
+        config_view
+            .request(release_latest_url)
+            .then((res) => {
+                const new_version = res.url.slice(res.url.lastIndexOf("/") + 1);
+                // 有新版
+                if (
+                    compareVersion(LiteLoader.versions.liteLoader, new_version)
+                ) {
+                    title.textContent = `发现 LiteLoaderQQNT 新版本 ${new_version}`;
+                    update_btn.textContent = "去瞅一眼";
+                    update_btn.value = res.url;
+                    update_btn.removeEventListener("click", try_again);
+                    update_btn.addEventListener("click", jump_link);
+                }
+                // 没新版
+                else {
+                    title.textContent =
+                        "暂未发现 LiteLoaderQQNT 有新版本，目前已是最新";
+                    update_btn.textContent = "重新发现";
+                    update_btn.value = null;
+                    update_btn.removeEventListener("click", jump_link);
+                    update_btn.addEventListener("click", try_again);
+                }
+            })
+            .catch((e) => {
+                title.textContent = `检查更新时遇到错误：${e}`;
                 update_btn.textContent = "重新发现";
                 update_btn.value = null;
                 update_btn.removeEventListener("click", jump_link);
                 update_btn.addEventListener("click", try_again);
-            }
-        });
-    }
+            });
+    };
 
     try_again();
 }
 
+function initNetwork(view) {
+    const network_input = view.querySelector(".network .network-input");
+    const reset = view.querySelector(".network .reset");
+    const apply = view.querySelector(".network .apply");
+
+    network_input.value = config?.proxy ?? "";
+
+    reset.addEventListener("click", async () => {
+        network_input.value = "";
+        config["proxy"] = "";
+        await config_view.setConfig(config);
+    });
+
+    apply.addEventListener("click", async () => {
+        try {
+            new URL(network_input.value);
+            config["proxy"] = network_input.value;
+            await config_view.setConfig(config);
+        } catch {
+            alert("代理地址格式有误，请检查");
+        }
+    });
+}
 
 function initDataDir(view) {
     const modal_window = view.querySelector(".path .modal-window");
@@ -89,11 +130,11 @@ function initDataDir(view) {
     const first = modal_dialog.querySelector(".first");
     const second = modal_dialog.querySelector(".second");
 
-    modal_window.addEventListener("click", event => {
+    modal_window.addEventListener("click", (event) => {
         modal_window.classList.add("hidden");
     });
 
-    modal_dialog.addEventListener("click", event => {
+    modal_dialog.addEventListener("click", (event) => {
         event.stopPropagation();
     });
 
@@ -143,10 +184,9 @@ function initDataDir(view) {
         pick_dir.classList.add("disabled");
         reset.classList.add("disabled");
         apply.classList.add("disabled");
-        title.textContent += "（非Windows平台请手动更改环境变量）"
+        title.textContent += "（非Windows平台请手动更改环境变量）";
     }
 }
-
 
 function initPluginList(view) {
     const section_plugins = view.querySelector(".plugins");
@@ -157,7 +197,7 @@ function initPluginList(view) {
         core: view.querySelector(".plugins .wrap.core ul")
     };
 
-    section_plugins.addEventListener("click", event => {
+    section_plugins.addEventListener("click", (event) => {
         const target = event.target.closest(".title");
         if (target) {
             const icon = target.querySelector("svg");
@@ -187,25 +227,32 @@ function initPluginList(view) {
             </div>
         </li>
         `;
-        const doc = new DOMParser().parseFromString(plugin_item_html, "text/html");
+        const doc = new DOMParser().parseFromString(
+            plugin_item_html,
+            "text/html"
+        );
 
         // 初始化按钮功能
         const switch_btn = doc.querySelector(".q-switch");
         switch_btn.addEventListener("click", switch_handle);
-        switch_btn.classList.toggle("is-active", !config.disabled.includes(manifest.slug));
+        switch_btn.classList.toggle(
+            "is-active",
+            !config.disabled.includes(manifest.slug)
+        );
 
         return doc.body;
-    }
+    };
 
     for (const [slug, plugin] of Object.entries(LiteLoader.plugins)) {
-        const switch_handler = event => {
-            const is_active = event.currentTarget.classList.contains("is-active");
+        const switch_handler = (event) => {
+            const is_active =
+                event.currentTarget.classList.contains("is-active");
             const enabled = [...config.disabled, slug];
-            const disabled = config.disabled.filter(value => value != slug);
+            const disabled = config.disabled.filter((value) => value != slug);
             config.disabled = is_active ? enabled : disabled;
             config_view.setConfig(config);
             event.currentTarget.classList.toggle("is-active");
-        }
+        };
 
         const thumbnail = plugin.manifest?.thumbnail;
         const plugin_icon = `llqqnt://local-file/${plugin.path.plugin}/${thumbnail}`;
@@ -214,37 +261,48 @@ function initPluginList(view) {
             ...plugin.manifest,
             thumbnail: thumbnail ? plugin_icon : default_icon,
             author: {
-                name: plugin.manifest.author?.name ?? plugin.manifest.author[0].name,
-                link: plugin.manifest.author?.link ?? plugin.manifest.author[0].link
+                name:
+                    plugin.manifest.author?.name ??
+                    plugin.manifest.author[0].name,
+                link:
+                    plugin.manifest.author?.link ??
+                    plugin.manifest.author[0].link
             }
-        }
+        };
 
         const plugin_item = createPluginItem(manifest, switch_handler);
-        const plugin_list = plugin_lists[plugin.manifest.type] || plugin_lists.extension;
-        plugin_item.childNodes.forEach(node => plugin_list.appendChild(node));
+        const plugin_list =
+            plugin_lists[plugin.manifest.type] || plugin_lists.extension;
+        plugin_item.childNodes.forEach((node) => plugin_list.appendChild(node));
     }
 }
-
 
 function initAbout(view) {
     const homepage_btn = view.querySelector(".about button.liteloaderqqnt");
     const github_btn = view.querySelector(".about button.github");
     const telegram_btn = view.querySelector(".about button.telegram");
 
-    homepage_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
-    github_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
-    telegram_btn.addEventListener("click", event => config_view.openWeb(event.currentTarget.value));
+    homepage_btn.addEventListener("click", (event) =>
+        config_view.openWeb(event.currentTarget.value)
+    );
+    github_btn.addEventListener("click", (event) =>
+        config_view.openWeb(event.currentTarget.value)
+    );
+    telegram_btn.addEventListener("click", (event) =>
+        config_view.openWeb(event.currentTarget.value)
+    );
 
     // Hitokoto - 一言
     const fetchHitokoto = async () => {
-        const { hitokoto, creator } = await (await fetch("https://v1.hitokoto.cn")).json();
+        const { hitokoto, creator } = await (
+            await fetch("https://v1.hitokoto.cn")
+        ).json();
         view.querySelector(".about .hitokoto_text").textContent = hitokoto;
         view.querySelector(".about .hitokoto_author").textContent = creator;
-    }
+    };
     fetchHitokoto();
     setInterval(fetchHitokoto, 1000 * 10);
 }
-
 
 export async function onConfigView(view) {
     const css_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/static/style.css`;
@@ -260,10 +318,11 @@ export async function onConfigView(view) {
     const html_text = await (await fetch(html_file_path)).text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(html_text, "text/html");
-    doc.querySelectorAll("section").forEach(node => view.appendChild(node));
+    doc.querySelectorAll("section").forEach((node) => view.appendChild(node));
 
     // 初始化
     initVersions(view);
+    initNetwork(view);
     initDataDir(view);
     initPluginList(view);
     initAbout(view);

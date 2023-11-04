@@ -4,7 +4,7 @@
     "name": "LiteLoader 配置界面",
     "slug": "config_view",
     "description": "LiteLoaderQQNT的配置界面",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "thumbnail": null,
     "author": {
         "name": "LiteLoaderQQNT",
@@ -14,7 +14,7 @@
         "repo": "LiteLoaderQQNT/LiteLoaderQQNT-Config-View",
         "branch": "v3",
         "use_release": {
-            "tag": "0.2.2",
+            "tag": "0.2.3",
             "name": "LiteLoaderQQNT-Config-View.zip"
         }
     },
