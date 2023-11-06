@@ -44,11 +44,34 @@
                 <div>
                     <h2>修改框架使用的代理</h2>
                     <p class="secondary-text">
-                        框架的自动更新与插件市场需要访问 Github 。若你所在的地区访问 Github 不畅，可以在这里设置代理。
+                        框架的自动更新与插件市场需要访问 Github
+                        。若你所在的地区访问 Github 不畅，可以在这里设置代理。
                     </p>
                     <p class="secondary-text">
-                        代理支持 http(s) 与 socks5，例如：socks5://127.0.0.1:7890
+                        代理支持 http(s) 与
+                        socks5，例如：socks5://127.0.0.1:7890。
                     </p>
+                    <p class="secondary-text">
+                        你也可以自动应用系统代理，只要在代理软件中设置“全局代理”或者“系统代理”，并在这里应用即可。
+                    </p>
+                    <p class="secondary-text">
+                        这里自动获取的系统代理，会优先读取 https_proxy 环境变量，或者
+                        npm 设置中的代理。若没有，且是 Windows
+                        系统，还会自动读取系统设置中的代理。
+                    </p>
+                    <div class="ops-btns" style="margin-top: 5px">
+                        <button
+                            class="q-button q-button--small q-button--secondary system-proxy"
+                        >
+                            测试并应用系统代理
+                        </button>
+
+                        <button
+                            class="q-button q-button--small q-button--secondary reset"
+                        >
+                            取消代理
+                        </button>
+                    </div>
                 </div>
             </div>
             <hr class="horizontal-dividing-line" />
@@ -60,14 +83,9 @@
                 />
                 <div class="ops-btns">
                     <button
-                        class="q-button q-button--small q-button--secondary reset"
-                    >
-                        取消代理
-                    </button>
-                    <button
                         class="q-button q-button--small q-button--secondary apply"
                     >
-                        立即应用
+                        测试并应用
                     </button>
                 </div>
             </div>

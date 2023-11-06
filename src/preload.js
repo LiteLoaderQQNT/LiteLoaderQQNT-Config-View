@@ -3,8 +3,13 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("config_view", {
     // 请求
-    request: (url) =>
-        ipcRenderer.invoke("LiteLoader.config_view.request", url),
+    request: (url) => ipcRenderer.invoke("LiteLoader.config_view.request", url),
+    // 获取系统代理
+    getSystemProxy: () =>
+        ipcRenderer.invoke("LiteLoader.config_view.getSystemProxy"),
+    // 测试代理
+    testProxy: (proxy) =>
+        ipcRenderer.invoke("LiteLoader.config_view.testProxy", proxy),
     // 获取配置
     getConfig: () => ipcRenderer.invoke("LiteLoader.config_view.getConfig"),
     // 设置配置

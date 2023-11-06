@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "get-proxy-settings": "^0.1.13",
         "https-proxy-agent": "^7.0.2"
     }
 }

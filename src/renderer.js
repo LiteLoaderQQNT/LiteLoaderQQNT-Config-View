@@ -27,7 +27,7 @@ export function compareVersion(local_version, remote_version) {
 const plugin_path = LiteLoader.plugins.config_view.path;
 
 // 获取配置文件
-const config = await config_view.getConfig();
+var config = await config_view.getConfig();
 
 function initVersions(view) {
     const qqnt = view.querySelector(".versions .wrap.current .qqnt p");
@@ -67,6 +67,7 @@ function initVersions(view) {
         config_view
             .request(release_latest_url)
             .then((res) => {
+                console.log(res);
                 const new_version = res.url.slice(res.url.lastIndexOf("/") + 1);
                 // 有新版
                 if (
@@ -89,6 +90,7 @@ function initVersions(view) {
                 }
             })
             .catch((e) => {
+                console.log(e);
                 title.textContent = `检查更新时遇到错误：${e}`;
                 update_btn.textContent = "重新发现";
                 update_btn.value = null;
@@ -103,24 +105,89 @@ function initVersions(view) {
 function initNetwork(view) {
     const network_input = view.querySelector(".network .network-input");
     const reset = view.querySelector(".network .reset");
+    const system = view.querySelector(".network .system-proxy");
     const apply = view.querySelector(".network .apply");
 
     network_input.value = config?.proxy ?? "";
 
+    var setAllInputDisabled = () => {
+        apply.disabled = "disabled";
+        system.disabled = "disabled";
+        reset.disabled = "disabled";
+        network_input.readonly = "readonly";
+    };
+
+    var setAllInputEnabled = () => {
+        apply.disabled = "";
+        system.disabled = "";
+        reset.disabled = "";
+        network_input.readonly = "";
+    };
+
     reset.addEventListener("click", async () => {
+        setAllInputDisabled();
         network_input.value = "";
         config["proxy"] = "";
         await config_view.setConfig(config);
+        alert("已成功取消代理");
+        setAllInputEnabled();
     });
 
     apply.addEventListener("click", async () => {
+        setAllInputDisabled();
         try {
             new URL(network_input.value);
-            config["proxy"] = network_input.value;
-            await config_view.setConfig(config);
         } catch {
             alert("代理地址格式有误，请检查");
+            setAllInputEnabled();
+            return;
         }
+
+        var proxyResult = await config_view.testProxy(network_input.value);
+        if (!proxyResult.isSucc) {
+            alert(`代理测试失败，请确认代理节点可访问 Github，错误${e}`);
+            setAllInputEnabled();
+            return;
+        }
+
+        alert("代理测试通过，已应用代理");
+
+        config["proxy"] = network_input.value;
+        await config_view.setConfig(config);
+        setAllInputEnabled();
+    });
+
+    system.addEventListener("click", async () => {
+        setAllInputDisabled();
+        var systemProxy = await config_view.getSystemProxy();
+        if (systemProxy == null) {
+            alert("系统代理为空");
+            setAllInputEnabled();
+            return;
+        }
+
+        network_input.value = systemProxy;
+
+        try {
+            new URL(systemProxy);
+        } catch {
+            alert("系统代理格式有误，无法应用");
+            setAllInputEnabled();
+            return;
+        }
+
+        var proxyResult = await config_view.testProxy(systemProxy);
+        if (!proxyResult.isSucc) {
+            alert(`系统代理测试失败，请确认代理节点可访问 Github，错误${e}`);
+            setAllInputEnabled();
+            return;
+        }
+
+        alert("代理测试通过，已应用代理");
+
+        config["proxy"] = systemProxy;
+        await config_view.setConfig(config);
+        setAllInputEnabled();
     });
 }
 
@@ -305,6 +372,8 @@ function initAbout(view) {
 }
 
 export async function onConfigView(view) {
+    config = await config_view.getConfig();
+
     const css_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/static/style.css`;
     const html_file_path = `llqqnt://local-file/${plugin_path.plugin}/src/static/view.html`;
 

@@ -4,6 +4,7 @@ const child_process = require("child_process");
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
+const { getProxySettings } = require("get-proxy-settings");
 const HttpsProxyAgent = require("https-proxy-agent");
 
 // 默认配置
@@ -15,10 +16,15 @@ const default_config = {
 var proxyAgent = undefined;
 
 // 简易的GET请求函数
-function request(url) {
+function request(url, proxy = null) {
     return new Promise((resolve, reject) => {
         const protocol = url.startsWith("https") ? https : http;
-        const req = protocol.get(url, { agent: proxyAgent });
+        var realProxyAgent = proxyAgent;
+        //手动指定的代理
+        if (proxy != null) {
+            realProxyAgent = new HttpsProxyAgent.HttpsProxyAgent(proxy);
+        }
+        const req = protocol.get(url, { agent: realProxyAgent });
         req.on("error", (error) => reject(error));
         req.on("response", (res) => {
             // 发生跳转就继续请求
@@ -31,6 +37,7 @@ function request(url) {
             res.on("end", () => {
                 var data = Buffer.concat(chunks);
                 resolve({
+                    statusCode: res.statusCode,
                     data: data,
                     str: data.toString("utf-8"),
                     url: res.url
@@ -38,6 +45,33 @@ function request(url) {
             });
         });
     });
+}
+
+async function getSystemProxy() {
+    const proxy = (await getProxySettings())?.https;
+    if (proxy == null) {
+        return null;
+    }
+    return `${proxy.protocol}://${proxy.host}:${proxy.port}`;
+}
+
+async function testProxy(proxy) {
+    return request(
+        "https://raw.githubusercontent.com/LiteLoaderQQNT/LiteLoaderQQNT-Plugin-List/v3/plugins.json",
+        proxy
+    )
+        .then((res) => {
+            return {
+                isSucc: true,
+                statusCode: res.statusCode
+            };
+        })
+        .catch((error) => {
+            return {
+                isSucc: false,
+                error: error
+            };
+        });
 }
 
 function getConfig() {
@@ -122,6 +156,16 @@ function onLoad(plugin) {
     // 请求
     ipcMain.handle("LiteLoader.config_view.request", (event, url) =>
         request(url)
+    );
+
+    // 获取系统代理
+    ipcMain.handle("LiteLoader.config_view.getSystemProxy", (event, url) =>
+        getSystemProxy()
+    );
+
+    // 测试代理
+    ipcMain.handle("LiteLoader.config_view.testProxy", (event, url) =>
+        testProxy()
     );
 
     // 获取配置
