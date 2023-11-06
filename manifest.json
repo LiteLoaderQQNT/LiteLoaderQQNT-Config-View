@@ -14,7 +14,7 @@
         "repo": "LiteLoaderQQNT/LiteLoaderQQNT-Config-View",
         "branch": "v3",
         "use_release": {
-            "tag": "0.2.3",
+            "tag": "0.2.5",
             "name": "LiteLoaderQQNT-Config-View.zip"
         }
     },
