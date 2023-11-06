@@ -145,7 +145,9 @@ function initNetwork(view) {
 
         var proxyResult = await config_view.testProxy(network_input.value);
         if (!proxyResult.isSucc) {
-            alert(`代理测试失败，请确认代理节点可访问 Github，错误${e}`);
+            alert(
+                `代理测试失败，请确认代理节点可访问 Github，错误${proxyResult.error}`
+            );
             setAllInputEnabled();
             return;
         }
@@ -178,7 +180,9 @@ function initNetwork(view) {
 
         var proxyResult = await config_view.testProxy(systemProxy);
         if (!proxyResult.isSucc) {
-            alert(`系统代理测试失败，请确认代理节点可访问 Github，错误${e}`);
+            alert(
+                `系统代理测试失败，请确认代理节点可访问 Github，错误${proxyResult.error}`
+            );
             setAllInputEnabled();
             return;
         }
