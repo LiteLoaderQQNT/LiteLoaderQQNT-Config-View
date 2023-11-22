@@ -165,7 +165,7 @@ function onLoad(plugin) {
 
     // 测试代理
     ipcMain.handle("LiteLoader.config_view.testProxy", (event, url) =>
-        testProxy()
+        testProxy(url)
     );
 
     // 获取配置
