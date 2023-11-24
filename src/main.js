@@ -159,13 +159,13 @@ function onLoad(plugin) {
     );
 
     // 获取系统代理
-    ipcMain.handle("LiteLoader.config_view.getSystemProxy", (event, url) =>
+    ipcMain.handle("LiteLoader.config_view.getSystemProxy", (event) =>
         getSystemProxy()
     );
 
     // 测试代理
     ipcMain.handle("LiteLoader.config_view.testProxy", (event, url) =>
-        testProxy()
+        testProxy(url)
     );
 
     // 获取配置
